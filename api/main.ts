@@ -1,24 +1,60 @@
 
-import { PINATA_API_KEY, PINATA_API_SECRET } from './keys'
-import fetch from 'node-fetch'
 import Fastify from 'fastify'
-import { BASE_URL } from './constants'
+import pinataSDK from '@pinata/sdk'
+import { PINATA_API_KEY, PINATA_API_SECRET } from './keys'
+import { BASE_GATEWAY } from './constants'
+// import { IAddOptions } from './schemas'
+
+// NodeJS
+import fs from 'fs'
+import { pipeline, Readable } from 'stream'
+import util from 'util'
+const pump = util.promisify(pipeline)
+
+
 const fastify = Fastify()
+fastify.register(require('@fastify/multipart'))
+
+const pinata = pinataSDK(PINATA_API_KEY, PINATA_API_SECRET)
 
 fastify.get('/', async (req, reply) => {
-    // Test Pinata Authentication
-    const result = await fetch(BASE_URL + '/data/testAuthentication', {
-        headers: {
-            'pinata_api_key': PINATA_API_KEY,
-            'pinata_secret_api_key': PINATA_API_SECRET,
-        }
-    })
-    const data = await result.json()
+    const result = await pinata.testAuthentication()
     reply.send({
         helu: 'there',
-        ...data
+        ...result
     })
 })
+
+fastify.post('/add', async (req, reply) => {
+
+    console.log(req.body)
+
+    const image = await req.file()
+    console.log({ readable: image.file.readable })
+    if (!image) reply.send({ error: "No image file" })
+
+    // const datastream = Readable.from((await image.toBuffer()))
+
+    const imageResult = await pinata.pinFileToIPFS(image.file)
+    reply.send({
+        ...imageResult
+    })
+    // const imageURL = ""
+    // const data = {
+    //     name: req.body.name,
+    //     description: req.body.description,
+    //     image: imageURL
+    // }
+    // const result = await pinata.pinJSONToIPFS(data)
+    // const nftURL = BASE_GATEWAY + result.IpfsHash
+
+    // reply.send({ ...result, nftURL })
+
+})
+
+// Use the /add route with predefined image, description and trait of timestamp or date
+fastify.post('/profile/mint', async (req, reply) => { })
+
 
 // Run the server
 const start = async () => {
