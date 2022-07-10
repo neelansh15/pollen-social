@@ -11,11 +11,17 @@ contract ProfileNFT is ERC1155, Ownable {
 
     constructor() ERC1155("") {}
 
+    /**
+        Mint a new Post
+    */
     function mint(string memory newUri) public onlyOwner {
         _mint(msg.sender, ++tokenId, 1, "");
         uris[tokenId] = newUri;
     }
 
+    /**
+        Return locally stored URI for a specific tokenId
+     */
     function uri(uint256 _tokenId)
         public
         view

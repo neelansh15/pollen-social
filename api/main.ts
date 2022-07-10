@@ -69,7 +69,9 @@ fastify.post('/add', async (req, reply) => {
 })
 
 // Use the /add route with predefined image, description and trait of timestamp or date
-fastify.post('/profile/mint', async (req, reply) => { })
+fastify.post('/profile/mint', async (req, reply) => {
+
+})
 
 
 // Run the server
