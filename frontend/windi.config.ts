@@ -1,4 +1,4 @@
-import { defineConfig } from 'windicss/helpers'
+import { defineConfig, transform } from 'windicss/helpers'
 import colors from 'windicss/colors'
 
 export default defineConfig({
@@ -11,5 +11,6 @@ export default defineConfig({
                 mont: "'Montserrat', 'sans-serif'"
             }
         }
-    }
+    },
+    plugins: [transform('daisyui')]
 })
