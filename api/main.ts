@@ -1,12 +1,16 @@
 
 import Fastify from 'fastify'
 import pinataSDK from '@pinata/sdk'
-import { PINATA_API_KEY, PINATA_API_SECRET } from './keys'
-import { BASE_GATEWAY } from './constants'
-// import { IAddOptions } from './schemas'
+import { ALCHEMY_RINKEBY_API_KEY, PINATA_API_KEY, PINATA_API_SECRET, PRIVATE_KEY } from './keys'
+import { BASE_GATEWAY, PROFILE_HUB } from './constants'
+import { ethers } from 'ethers'
+import ProfileHubABI from './abis/ProfileHub.json'
 
 // NodeJS
 import { Readable } from 'stream'
+
+const provider = new ethers.providers.AlchemyProvider(4, ALCHEMY_RINKEBY_API_KEY)
+const account = new ethers.Wallet(PRIVATE_KEY, provider)
 
 const fastify = Fastify()
 fastify.register(require('@fastify/multipart'), {
@@ -23,7 +27,7 @@ fastify.get('/', async (req, reply) => {
     })
 })
 
-fastify.post('/add', async (req, reply) => {
+fastify.post('/createPost', async (req, reply) => {
 
     const image = await (req.body as any).image
     if (!image) reply.send({ error: "No image file" })
@@ -70,7 +74,8 @@ fastify.post('/add', async (req, reply) => {
 
 // Use the /add route with predefined image, description and trait of timestamp or date
 fastify.post('/profile/mint', async (req, reply) => {
-
+    const profileHub = new ethers.Contract(PROFILE_HUB, ProfileHubABI.toString(), provider)
+    reply.send(await profileHub.owner())
 })
 
 
