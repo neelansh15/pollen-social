@@ -44,7 +44,7 @@ fastify.post('/add', async (req, reply) => {
         const result = await pinata.pinJSONToIPFS(data)
         const nftURL = BASE_GATEWAY + result.IpfsHash
 
-        reply.send({ ...result, nftURL })
+        reply.send({ ...result, url: nftURL })
     }
     catch (e) {
         console.error(e)
