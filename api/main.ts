@@ -9,6 +9,7 @@ import { BASE_GATEWAY } from './constants'
 import fs from 'fs'
 import { pipeline, Readable } from 'stream'
 import util from 'util'
+
 const pump = util.promisify(pipeline)
 
 
@@ -33,12 +34,22 @@ fastify.post('/add', async (req, reply) => {
     console.log({ readable: image.file.readable })
     if (!image) reply.send({ error: "No image file" })
 
-    // const datastream = Readable.from((await image.toBuffer()))
+    const readableStream = Readable.from(await image.toBuffer())
+    // @ts-ignore
+    readableStream.path = image.filename
 
-    const imageResult = await pinata.pinFileToIPFS(image.file)
-    reply.send({
-        ...imageResult
-    })
+    try {
+        const imageResult = await pinata.pinFileToIPFS(readableStream)
+        reply.send({
+            ...imageResult
+        })
+    }
+    catch (e) {
+        console.error(e)
+        reply.send({
+            error: e
+        })
+    }
     // const imageURL = ""
     // const data = {
     //     name: req.body.name,
@@ -59,8 +70,8 @@ fastify.post('/profile/mint', async (req, reply) => { })
 // Run the server
 const start = async () => {
     try {
-        await fastify.listen({ port: 3000 })
-        console.log("Listening on http://localhost:3000")
+        await fastify.listen({ port: 8000 })
+        console.log("Listening on http://localhost:8000")
     } catch (err) {
         fastify.log.error(err)
         process.exit(1)
