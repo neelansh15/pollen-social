@@ -3,13 +3,28 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ProfileNFT is ERC1155, Ownable {
+contract ProfileNFT is ERC1155 {
     uint256 public tokenId;
     mapping(uint256 => string) public uris;
 
-    constructor() ERC1155("") {}
+    address public owner;
+    address public factory;
+
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "ONLY_OWNER");
+        _;
+    }
+
+    constructor() ERC1155("") {
+        owner = msg.sender;
+        factory = msg.sender;
+    }
 
     /**
         Mint a new Post
@@ -30,4 +45,12 @@ contract ProfileNFT is ERC1155, Ownable {
     {
         return uris[_tokenId];
     }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == factory, "ONLY_FACTORY_TRANSFER");
+        owner = newOwner;
+        emit OwnershipTransferred(msg.sender, owner);
+    }
+
+    // To think about: Transfer of Posts as NFTs, to keep or not to keep.
 }
