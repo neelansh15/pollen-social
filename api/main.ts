@@ -30,6 +30,8 @@ fastify.post('/add', async (req, reply) => {
     if (!(req.body as any).name.value || !(req.body as any).description.value) reply.send({ error: "Missing name or description fields" })
 
     const readableStream = Readable.from(await image.toBuffer())
+
+    // IMPORTANT: This is the only fix for Pinata to work. It needs a 'path' property in the Readable Stream
     // @ts-ignore
     readableStream.path = image.filename
 
@@ -39,7 +41,19 @@ fastify.post('/add', async (req, reply) => {
         const data = {
             name: (req.body as any).name.value,
             description: (req.body as any).description.value,
-            image: imageURL
+            image: imageURL,
+            external_url: "https://github.com/neelansh15",
+            attributes: [
+                {
+                    trait_type: "Likes",
+                    value: 0
+                },
+                {
+                    display_type: "date",
+                    trait_type: "Posted on",
+                    value: +new Date / 1000
+                }
+            ]
         }
         const result = await pinata.pinJSONToIPFS(data)
         const nftURL = BASE_GATEWAY + result.IpfsHash
@@ -52,8 +66,6 @@ fastify.post('/add', async (req, reply) => {
             error: e
         })
     }
-
-
 })
 
 // Use the /add route with predefined image, description and trait of timestamp or date
