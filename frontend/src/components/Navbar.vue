@@ -1,4 +1,34 @@
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import { ConnectWalletButton, useMetaMaskWallet } from 'vue-connect-wallet'
+import { useStore } from '../store'
+
+const store = useStore()
+const { address } = storeToRefs(store)
+
+const wallet = useMetaMaskWallet()
+
+async function connect() {
+    const accounts = await wallet.connect()
+    if (typeof accounts === 'string') return
+
+    store.$patch({
+        address: accounts[0]
+    })
+}
+
+async function init() {
+    const accounts = await wallet.getAccounts()
+    if (typeof accounts === 'string') return
+    if (accounts.length > 0) connect()
+    else if (address.value) store.$patch({ address: '' })
+}
+
+onMounted(init)
+wallet.onAccountsChanged(init)
+wallet.onChainChanged(init)
+
 </script>
 
 <template>
@@ -8,8 +38,19 @@
         </div>
         <div class="flex-none">
             <ul class="menu menu-horizontal p-0">
-                <li><a>New Post</a></li>
-                <li><a>Profile</a></li>
+                <li>
+                    <router-link to="/new">New Post</router-link>
+                </li>
+                <li>
+                    <router-link to="/">Profile</router-link>
+                </li>
+                <li>
+                    <ConnectWalletButton :address="address || ''" :dark="true">
+                        <template #connectWalletButton>
+                            <button class="text-[1rem]" @click="connect">Connect Wallet</button>
+                        </template>
+                    </ConnectWalletButton>
+                </li>
                 <!-- <li tabindex="0">
                     <a>
                         Parent

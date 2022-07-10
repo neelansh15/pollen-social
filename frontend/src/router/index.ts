@@ -4,6 +4,10 @@ const routes = [
     {
         path: '/',
         component: () => import('../pages/Home.vue'),
+    },
+    {
+        path: '/new',
+        component: () => import('../pages/NewPost.vue'),
     }
 ]
 
