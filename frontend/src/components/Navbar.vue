@@ -45,7 +45,7 @@ wallet.onChainChanged(init)
                     <router-link to="/">Profile</router-link>
                 </li>
                 <li>
-                    <ConnectWalletButton :address="address || ''" :dark="true">
+                    <ConnectWalletButton :address="address || ''" :dark="true" class="">
                         <template #connectWalletButton>
                             <button class="text-[1rem]" @click="connect">Connect Wallet</button>
                         </template>

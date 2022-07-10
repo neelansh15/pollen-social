@@ -9,7 +9,7 @@ import PostCard from '../components/PostCard.vue';
 
     <div class="mt-5 p-5">
         <!-- <h1 class="text-2xl font-mont font-semibold">Posts</h1> -->
-        <div class="grid grid-cols-6 gap-5 mt-3">
+        <div class="grid grid-cols-5 gap-5 mt-3">
             <PostCard v-for="n in 10" :key="n" />
         </div>
     </div>
