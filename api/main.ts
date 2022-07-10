@@ -6,15 +6,12 @@ import { BASE_GATEWAY } from './constants'
 // import { IAddOptions } from './schemas'
 
 // NodeJS
-import fs from 'fs'
-import { pipeline, Readable } from 'stream'
-import util from 'util'
-
-const pump = util.promisify(pipeline)
-
+import { Readable } from 'stream'
 
 const fastify = Fastify()
-fastify.register(require('@fastify/multipart'))
+fastify.register(require('@fastify/multipart'), {
+    attachFieldsToBody: true
+})
 
 const pinata = pinataSDK(PINATA_API_KEY, PINATA_API_SECRET)
 
@@ -28,11 +25,9 @@ fastify.get('/', async (req, reply) => {
 
 fastify.post('/add', async (req, reply) => {
 
-    console.log(req.body)
-
-    const image = await req.file()
-    console.log({ readable: image.file.readable })
+    const image = await (req.body as any).image
     if (!image) reply.send({ error: "No image file" })
+    if (!(req.body as any).name.value || !(req.body as any).description.value) reply.send({ error: "Missing name or description fields" })
 
     const readableStream = Readable.from(await image.toBuffer())
     // @ts-ignore
@@ -40,9 +35,16 @@ fastify.post('/add', async (req, reply) => {
 
     try {
         const imageResult = await pinata.pinFileToIPFS(readableStream)
-        reply.send({
-            ...imageResult
-        })
+        const imageURL = BASE_GATEWAY + imageResult.IpfsHash
+        const data = {
+            name: (req.body as any).name.value,
+            description: (req.body as any).description.value,
+            image: imageURL
+        }
+        const result = await pinata.pinJSONToIPFS(data)
+        const nftURL = BASE_GATEWAY + result.IpfsHash
+
+        reply.send({ ...result, nftURL })
     }
     catch (e) {
         console.error(e)
@@ -50,16 +52,7 @@ fastify.post('/add', async (req, reply) => {
             error: e
         })
     }
-    // const imageURL = ""
-    // const data = {
-    //     name: req.body.name,
-    //     description: req.body.description,
-    //     image: imageURL
-    // }
-    // const result = await pinata.pinJSONToIPFS(data)
-    // const nftURL = BASE_GATEWAY + result.IpfsHash
 
-    // reply.send({ ...result, nftURL })
 
 })
 
