@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import Navbar from '../components/Navbar.vue';
 </script>
 
 <template>
-    <Navbar />
-    <h1>Home</h1>
+    <div class="p-5 bg-primary-500">
+        <h1 class="mt-12 font-bold text-4xl font-mont">Dashboard</h1>
+    </div>
 </template>
