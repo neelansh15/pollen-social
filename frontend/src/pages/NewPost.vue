@@ -1,6 +1,13 @@
 <script lang="ts" setup>
 
-async function submit() { }
+async function init(){
+    // Fetch user's ProfileNFT collection address
+    
+}
+
+async function submit() {
+    
+}
 
 </script>
 

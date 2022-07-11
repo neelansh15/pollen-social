@@ -5,7 +5,7 @@ import { ConnectWalletButton, useMetaMaskWallet } from 'vue-connect-wallet'
 import { useStore } from '../store'
 
 const store = useStore()
-const { address } = storeToRefs(store)
+const { address, transactions } = storeToRefs(store)
 
 const wallet = useMetaMaskWallet()
 
@@ -34,7 +34,7 @@ wallet.onChainChanged(init)
 <template>
     <nav class="navbar bg-base-300">
         <div class="flex-1">
-            <router-link to="/" class="btn btn-ghost normal-case text-xl">Pollen Social</router-link>
+            <router-link to="/" class="btn btn-ghost normal-case text-xl">Pollen Social <span class="badge ml-1 mt-0.5">Rinkeby</span></router-link>
         </div>
         <div class="flex-none">
             <ul class="menu menu-horizontal p-0">
@@ -42,10 +42,10 @@ wallet.onChainChanged(init)
                     <router-link to="/new">New Post</router-link>
                 </li>
                 <li>
-                    <router-link to="/">Profile</router-link>
+                    <router-link to="/mint">Mint Profile</router-link>
                 </li>
                 <li>
-                    <ConnectWalletButton :address="address || ''" :dark="true" class="">
+                    <ConnectWalletButton :address="address || ''" :dark="true" :txnCount="transactions.length">
                         <template #connectWalletButton>
                             <button class="text-[1rem]" @click="connect">Connect Wallet</button>
                         </template>

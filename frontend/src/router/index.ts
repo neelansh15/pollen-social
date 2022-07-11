@@ -8,6 +8,10 @@ const routes = [
     {
         path: '/new',
         component: () => import('../pages/NewPost.vue'),
+    },
+    {
+        path: '/mint',
+        component: () => import('../pages/MintProfile.vue'),
     }
 ]
 

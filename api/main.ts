@@ -14,9 +14,11 @@ const provider = new ethers.providers.AlchemyProvider(4, ALCHEMY_RINKEBY_API_KEY
 const account = new ethers.Wallet(PRIVATE_KEY, provider)
 
 const fastify = Fastify()
+fastify.register(require('@fastify/cors'))
 fastify.register(require('@fastify/multipart'), {
     attachFieldsToBody: true
 })
+
 
 const pinata = pinataSDK(PINATA_API_KEY, PINATA_API_SECRET)
 
@@ -75,6 +77,7 @@ fastify.post('/createPost', async (req, reply) => {
 
 // Currently anybody can mint. Later can implement whitelist or blacklist on this api endpoint. Problem right now is, it's costing gas. Also, need a mutex in future
 fastify.post('/profile/mint', async (req, reply) => {
+    console.log("Mint Profile called", req.body)
     const address = (req.body as any).address
     if (!(req.body as any).name || !address || !ethers.utils.isAddress(address)) reply.send({ error: "Incorrect Inputs" })
 
