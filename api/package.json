@@ -17,7 +17,9 @@
   "dependencies": {
     "@fastify/multipart": "^7.1.0",
     "@pinata/sdk": "^1.1.26",
+    "@types/lodash": "^4.14.182",
     "ethers": "^5.6.9",
-    "fastify": "^4.2.0"
+    "fastify": "^4.2.0",
+    "lodash": "^4.17.21"
   }
 }

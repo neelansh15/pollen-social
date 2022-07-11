@@ -55,29 +55,29 @@ contract ProfileHub is ERC1155 {
     /**
         Mint Profile NFT Token and create the collection for user
      */
-    function mint(string memory profileURI)
+    function mint(address to, string memory profileURI)
         external
         onlyOwner
         returns (address)
     {
         // One address can only mint one profile nft (concept for now)
-        require(owns[msg.sender] == address(0), "MAX_PROFILE_NFT_LIMIT");
+        require(owns[to] == address(0), "MAX_PROFILE_NFT_LIMIT");
 
-        _mint(msg.sender, ++tokenId, 1, "");
+        _mint(to, ++tokenId, 1, "");
 
         // Set once only
         uris[tokenId] = profileURI;
 
         ProfileNFT nft = new ProfileNFT();
-        nft.transferOwnership(msg.sender);
+        nft.transferOwnership(to);
 
         // Set here. Can be changed on transfer
-        owns[msg.sender] = address(nft);
+        owns[to] = address(nft);
 
         // Set once only
         tokenCollection[tokenId] = address(nft);
 
-        emit NewProfile(msg.sender, address(nft), tokenId);
+        emit NewProfile(to, address(nft), tokenId);
 
         return address(nft);
     }
