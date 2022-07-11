@@ -16,6 +16,8 @@ contract ProfileNFT is ERC1155 {
         address indexed newOwner
     );
 
+    event Mint(address indexed owner, string uri);
+
     modifier onlyOwner() {
         require(msg.sender == owner, "ONLY_OWNER");
         _;
@@ -32,6 +34,7 @@ contract ProfileNFT is ERC1155 {
     function mint(string memory newUri) public onlyOwner {
         _mint(msg.sender, ++tokenId, 1, "");
         uris[tokenId] = newUri;
+        emit Mint(owner, newUri);
     }
 
     /**

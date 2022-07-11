@@ -29,6 +29,23 @@
     {
         "type": "event",
         "anonymous": false,
+        "name": "Mint",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "owner",
+                "indexed": true
+            },
+            {
+                "type": "string",
+                "name": "uri",
+                "indexed": false
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
         "name": "OwnershipTransferred",
         "inputs": [
             {
