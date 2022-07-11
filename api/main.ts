@@ -31,7 +31,7 @@ fastify.get('/', async (req, reply) => {
 })
 
 fastify.post('/createPost', async (req, reply) => {
-
+    console.log("Create Post called", req.body)
     const image = await (req.body as any).image
     if (!image) reply.send({ error: "No image file" })
     if (!(req.body as any).name.value || !(req.body as any).description.value) reply.send({ error: "Missing name or description fields" })

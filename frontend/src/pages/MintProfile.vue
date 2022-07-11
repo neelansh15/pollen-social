@@ -10,13 +10,14 @@ import { computed } from '@vue/reactivity';
 
 const store = useStore()
 const { address } = storeToRefs(store)
-const error = ref('')
-const notice = ref('')
 
 const name = ref('')
 
 const loading = ref(false)
 const disabled = computed(() => !address.value || loading.value)
+
+const error = ref('')
+const notice = ref('')
 
 const { addTransaction } = store
 

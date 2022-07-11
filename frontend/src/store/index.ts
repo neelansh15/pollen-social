@@ -10,7 +10,9 @@ export const useStore = defineStore('Store', {
         async addTransaction(hash: string) {
             this.transactions.push(hash)
             await readProvider.waitForTransaction(hash, 1)
-            this.removeTransaction(hash)
+            console.log(`Transaction ${hash} done`)
+            this.transactions.filter(txnHash => txnHash != hash)
+            // this.removeTransaction(hash)
         },
         removeTransaction(hash: string) {
             this.transactions.filter(txnHash => txnHash != hash)
