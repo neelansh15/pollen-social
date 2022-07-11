@@ -146,6 +146,7 @@ fastify.get('/posts', async (req, reply) => {
 const start = async () => {
     try {
         const PORT = process.env.PORT || 8000
+        // @ts-ignore
         await fastify.listen({ port: PORT })
         console.log(`Listening on http://localhost:${PORT}`)
     } catch (err) {
