@@ -4,6 +4,7 @@
   "main": "main.js",
   "license": "MIT",
   "scripts": {
+    "start": "ts-node-esm --transpileOnly main.ts",
     "dev": "node-dev main.ts --debounce",
     "dev:ts": "ts-node-esm --transpileOnly main.ts",
     "dev:strict": "ts-node-esm main.ts"
