@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue';
 const props = defineProps(['post'])
 
 const metadata = ref({
-    title: '',
+    name: '',
     description: '',
     image: ''
 })
@@ -19,9 +19,9 @@ onMounted(() => {
 <template>
     <div class="card bg-base-300">
         <!-- <figure><img src="https://placeimg.com/400/225/arch" alt="Random Image" /></figure> -->
-        <figure><img :src="metadata.image" :alt="metadata.title" /></figure>
+        <figure><img :src="metadata.image" :alt="metadata.name" /></figure>
         <div class="card-body">
-            <h1 class="card-title">{{ metadata.title }}</h1>
+            <h1 class="card-title">{{ metadata.name }}</h1>
             <p>{{ metadata.description }}</p>
         </div>
     </div>

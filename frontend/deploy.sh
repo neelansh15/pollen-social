@@ -1,0 +1,1 @@
+yarn build && surge ./dist --domain pollensocial.surge.sh

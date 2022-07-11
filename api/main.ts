@@ -10,7 +10,6 @@ import ProfileHubABI from './abis/ProfileHub.json'
 
 // NodeJS
 import { Readable } from 'stream'
-import { formatUnits, parseUnits } from 'ethers/lib/utils'
 
 const provider = new ethers.providers.AlchemyProvider(4, ALCHEMY_RINKEBY_API_KEY)
 const account = new ethers.Wallet(PRIVATE_KEY, provider)
@@ -146,8 +145,9 @@ fastify.get('/posts', async (req, reply) => {
 // Run the server
 const start = async () => {
     try {
-        await fastify.listen({ port: 8000 })
-        console.log("Listening on http://localhost:8000")
+        const PORT = process.env.PORT || 8000
+        await fastify.listen({ port: PORT })
+        console.log(`Listening on http://localhost:${PORT}`)
     } catch (err) {
         fastify.log.error(err)
         process.exit(1)
