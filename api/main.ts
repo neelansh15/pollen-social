@@ -1,14 +1,16 @@
 
 import Fastify from 'fastify'
+import Moralis from "moralis/node"
 import pinataSDK from '@pinata/sdk'
-import { ALCHEMY_RINKEBY_API_KEY, PINATA_API_KEY, PINATA_API_SECRET, PRIVATE_KEY } from './keys'
+import { ALCHEMY_RINKEBY_API_KEY, appId, masterKey, PINATA_API_KEY, PINATA_API_SECRET, PRIVATE_KEY, serverUrl } from './keys'
 import { BASE_GATEWAY, PROFILE_HUB } from './constants'
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { snakeCase } from 'lodash'
 import ProfileHubABI from './abis/ProfileHub.json'
 
 // NodeJS
 import { Readable } from 'stream'
+import { formatUnits, parseUnits } from 'ethers/lib/utils'
 
 const provider = new ethers.providers.AlchemyProvider(4, ALCHEMY_RINKEBY_API_KEY)
 const account = new ethers.Wallet(PRIVATE_KEY, provider)
@@ -31,7 +33,6 @@ fastify.get('/', async (req, reply) => {
 })
 
 fastify.post('/createPost', async (req, reply) => {
-    console.log("Create Post called", req.body)
     const image = await (req.body as any).image
     if (!image) reply.send({ error: "No image file" })
     if (!(req.body as any).name.value || !(req.body as any).description.value) reply.send({ error: "Missing name or description fields" })
@@ -77,7 +78,6 @@ fastify.post('/createPost', async (req, reply) => {
 
 // Currently anybody can mint. Later can implement whitelist or blacklist on this api endpoint. Problem right now is, it's costing gas. Also, need a mutex in future
 fastify.post('/profile/mint', async (req, reply) => {
-    console.log("Mint Profile called", req.body)
     const address = (req.body as any).address
     if (!(req.body as any).name || !address || !ethers.utils.isAddress(address)) reply.send({ error: "Incorrect Inputs" })
 
@@ -109,6 +109,39 @@ fastify.post('/profile/mint', async (req, reply) => {
     }
 })
 
+fastify.get('/posts', async (req, reply) => {
+    try {
+        await Moralis.start({ serverUrl, appId, masterKey });
+
+        // Get ongoing tokenId from ProfileHub
+        const profileHub = new ethers.Contract(PROFILE_HUB, ProfileHubABI as any, account)
+        let tokenId = ((await profileHub.tokenId() as BigNumber).toNumber())
+
+        // Limit to first 9 people's posts for now
+        if (tokenId > 9) tokenId = 9
+
+        const nfts: any[] = []
+
+        for (let i = 1; i <= tokenId; i++) {
+            const collectionAddress = await profileHub.tokenCollection(i)
+            console.log(i, collectionAddress)
+            const currentNFTs = await Moralis.Web3API.token.getAllTokenIds({
+                chain: 'rinkeby',
+                address: collectionAddress,
+                limit: 5
+            })
+            if (currentNFTs) {
+                // @ts-ignore
+                nfts.push(...currentNFTs.result)
+            }
+        }
+
+        reply.send(nfts)
+    }
+    catch (e: any) {
+        reply.send({ error: e })
+    }
+})
 
 // Run the server
 const start = async () => {
